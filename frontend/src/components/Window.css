@@ -47,6 +47,7 @@
 
 .window-content {
   height: calc(100vh - var(--h));
+  position: relative;
   overflow-y: auto;
 
   @apply p-4;

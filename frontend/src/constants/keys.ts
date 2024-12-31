@@ -210,3 +210,8 @@ export function sortKeyCombo(combo: number[]): number[] {
 export function formatKeyCombo(combo: number[]): string {
   return sortKeyCombo(combo).map(getKeyName).join(" + ");
 }
+
+// Функция для получения названий клавиш
+export function getKeyNames(combo: number[]): string[] {
+  return sortKeyCombo(combo).map(getKeyName);
+}
