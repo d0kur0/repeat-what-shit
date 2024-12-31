@@ -3,6 +3,7 @@ import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { $app, deleteMacro } from "../stores/app";
+import { getKeyNames } from "../constants/keys";
 
 export function List() {
   const { macros } = useStore($app);
@@ -56,10 +57,10 @@ export function List() {
               </div>
             </div>
 
-            <div className="flex items-center gap-x-1">
-              {macro.activation_keys.map((key, index) => (
-                <div key={index} className="kbd">
-                  {key}
+            <div className="flex flex-wrap items-center gap-1">
+              {getKeyNames(macro.activation_keys).map((keyName, index) => (
+                <div key={index} className="px-1.5 py-0.5 bg-zinc-800 rounded text-xs">
+                  {keyName}
                 </div>
               ))}
             </div>

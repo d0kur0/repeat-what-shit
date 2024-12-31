@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { EventsOff, EventsOn } from "../../wailsjs/runtime/runtime";
 import { StartCapture, StopCapture } from "../../wailsjs/go/main/App";
 import { formatKeyCombo } from "../constants/keys";
@@ -9,7 +9,14 @@ interface HotkeyCaptureProps {
 }
 
 export function HotkeyCapture({ value, onChange }: HotkeyCaptureProps) {
+  const isCapturing = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const handleFocus = () => {
+    if (isCapturing.current) {
+      return;
+    }
+    isCapturing.current = true;
     StartCapture();
 
     // Блокируем скролл
@@ -23,13 +30,6 @@ export function HotkeyCapture({ value, onChange }: HotkeyCaptureProps) {
       }
     };
     document.addEventListener("mousedown", preventMiddleClick);
-
-    EventsOn("combo_captured", (combo: number[]) => {
-      if (combo.some(code => code === 513)) {
-        return;
-      }
-      onChange(combo);
-    });
 
     // Сохраняем функции для последующего удаления
     const cleanup = () => {
@@ -49,15 +49,35 @@ export function HotkeyCapture({ value, onChange }: HotkeyCaptureProps) {
   };
 
   const handleBlur = () => {
+    isCapturing.current = false;
     StopCapture();
   };
 
   useEffect(() => {
-    EventsOff("combo_captured");
-  }, []);
+    const currentInput = inputRef.current;
+
+    const handleComboCaptured = (combo: number[]) => {
+      // Проверяем, что этот инпут в фокусе
+      if (document.activeElement !== currentInput) {
+        return;
+      }
+
+      if (combo.some(code => code === 513)) {
+        return;
+      }
+      onChange(combo);
+    };
+
+    EventsOn("combo_captured", handleComboCaptured);
+
+    return () => {
+      EventsOff("combo_captured");
+    };
+  }, [onChange]);
 
   return (
     <input
+      ref={inputRef}
       type="text"
       value={value.length > 0 ? formatKeyCombo(value) : ""}
       readOnly
