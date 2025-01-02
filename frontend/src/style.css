@@ -36,7 +36,7 @@ body {
 }
 
 .kbd {
-  @apply bg-zinc-950 border border-zinc-700 rounded-md px-2 py-0.5 text-xs inline-flex items-center;
+  @apply bg-zinc-900 border border-zinc-200 rounded-md px-2 py-0.5 text-xs inline-flex items-center;
 }
 
 .btn {

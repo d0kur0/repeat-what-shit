@@ -10,6 +10,7 @@ export namespace main {
 	    activation_keys: number[];
 	    type: number;
 	    actions: MacroAction[];
+	    include_titles: string;
 	}
 	export interface AppData {
 	    macros: Macro[];
