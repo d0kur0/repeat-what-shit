@@ -12,6 +12,7 @@ import { MacroType, MACRO_TYPE_NAMES, DEFAULT_MACRO } from "../constants/macro";
 const MACRO_TYPE_DESCRIPTIONS: Record<MacroType, string> = {
   [MacroType.Sequence]: "Срабатывает при каждом нажатии комбинации клавиш",
   [MacroType.Toggle]: "Включается и выключается при нажатии комбинации клавиш",
+  [MacroType.Hold]: "Выполняется многократно, пока зажата комбинация клавиш",
 };
 
 export function Form() {

@@ -34,6 +34,8 @@ var (
 	getModuleFileNameEx = psapi.NewProc("GetModuleFileNameExW")
 	openProcess         = kernel32.NewProc("OpenProcess")
 	closeHandle         = kernel32.NewProc("CloseHandle")
+
+	getAsyncKeyState = user32.NewProc("GetAsyncKeyState")
 )
 
 type KeyCombo []int
@@ -183,27 +185,19 @@ func (s *HotkeyService) handleEvents() {
 				key := int(e.VKCode)
 				log.Printf("Key pressed: %X", key)
 
-				if s.isKeyPressed(key) {
-					continue
+				// Для новых нажатий
+				if !s.isKeyPressed(key) {
+					s.pressedKeys = append(s.pressedKeys, key)
+
+					_, cancel := context.WithCancel(context.Background())
+					s.cancelMu.Lock()
+					s.cancelMap[key] = cancel
+					s.cancelMu.Unlock()
 				}
 
-				s.pressedKeys = append(s.pressedKeys, key)
-
-				ctx, cancel := context.WithCancel(context.Background())
-				s.cancelMu.Lock()
-				s.cancelMap[key] = cancel
-				s.cancelMu.Unlock()
-
+				// Всегда вызываем обработчик при нажатии
 				if s.handler != nil {
-					go func(ctx context.Context, combo KeyCombo) {
-						select {
-						case <-ctx.Done():
-							return
-						default:
-							log.Printf("Emulating combo: %X", combo)
-							s.handler(combo, "")
-						}
-					}(ctx, append([]int(nil), s.pressedKeys...))
+					go s.handler(append([]int(nil), s.pressedKeys...), "")
 				}
 
 			case types.WM_KEYUP, types.WM_SYSKEYUP:
@@ -244,4 +238,20 @@ func (s *HotkeyService) handleEvents() {
 			}
 		}
 	}
+}
+
+// IsComboPressed проверяет, нажата ли указанная комбинация клавиш
+func IsComboPressed(combo []int) bool {
+	for _, key := range combo {
+		if !isKeyPressed(key) {
+			return false
+		}
+	}
+	return true
+}
+
+// isKeyPressed проверяет, нажата ли указанная клавиша
+func isKeyPressed(key int) bool {
+	ret, _, _ := getAsyncKeyState.Call(uintptr(key))
+	return (ret & 0x8000) != 0
 }

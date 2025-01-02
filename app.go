@@ -20,6 +20,7 @@ type MacroType int
 const (
 	MacroTypeSequence MacroType = iota
 	MacroTypeToggle
+	MacroTypeHold
 )
 
 var configFilePath string
@@ -62,6 +63,7 @@ type App struct {
 	// Состояния макросов
 	toggledMacros   map[string]bool    // для макросов-переключателей
 	executingMacros map[string]*string // для отслеживания выполняющихся макросов
+	holdingMacros   map[string]bool    // для отслеживания hold макросов
 }
 
 func NewApp() *App {
@@ -69,6 +71,7 @@ func NewApp() *App {
 		hotkeyService:   hotkeys.NewHotkeyService(),
 		toggledMacros:   make(map[string]bool),
 		executingMacros: make(map[string]*string),
+		holdingMacros:   make(map[string]bool),
 	}
 }
 
@@ -98,6 +101,17 @@ func (a *App) handleHotkey(combo hotkeys.KeyCombo, _ string) {
 				continue
 			}
 
+			// Проверяем, не выполняется ли уже этот макрос (только для Sequence)
+			if macro.Type == MacroTypeSequence {
+				if _, exists := a.executingMacros[macro.ID]; exists {
+					continue
+				}
+				// Помечаем макрос как выполняющийся
+				a.executingMacros[macro.ID] = new(string)
+				// Очищаем метку после выполнения
+				defer delete(a.executingMacros, macro.ID)
+			}
+
 			switch macro.Type {
 			case MacroTypeSequence:
 				for _, action := range macro.Actions {
@@ -120,6 +134,26 @@ func (a *App) handleHotkey(combo hotkeys.KeyCombo, _ string) {
 								}
 								if action.Delay > 0 {
 									time.Sleep(time.Duration(action.Delay) * time.Millisecond)
+								}
+							}
+						}
+					}(macro.ID, macro.Actions)
+				}
+
+			case MacroTypeHold:
+				// Для Hold сразу начинаем спамить действия
+				for _, action := range macro.Actions {
+					if err := input.SendInput(action.Keys); err != nil {
+						log.Printf("[ERROR] Не удалось отправить комбинацию клавиш: %v", err)
+					}
+				}
+				// Если клавиши все еще нажаты, запускаем горутину для продолжения спама
+				if hotkeys.IsComboPressed(sortedKeys) {
+					go func(macroID string, actions []MacroAction) {
+						for hotkeys.IsComboPressed(sortedKeys) {
+							for _, action := range actions {
+								if err := input.SendInput(action.Keys); err != nil {
+									log.Printf("[ERROR] Не удалось отправить комбинацию клавиш: %v", err)
 								}
 							}
 						}
