@@ -166,13 +166,13 @@ export function Form() {
 
             {/* Действия */}
             <div>
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center mb-6 gap-x-2">
                 <label className="block text-sm font-medium">Действия</label>
                 <button
                   onClick={addAction}
-                  className="px-3 py-1 bg-violet-600 hover:bg-violet-700 rounded-lg text-sm transition-colors"
+                  className="px-2 py-0.5 bg-violet-600 hover:bg-violet-700 rounded-lg text-xs transition-colors"
                 >
-                  Добавить действие
+                  Добавить
                 </button>
               </div>
 
@@ -204,11 +204,11 @@ export function Form() {
                                 <input
                                   className={`p-0 bg-transparent border-0 text-white text-sm outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none w-full`}
                                   style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
-                                  type="text"
+                                  type="number"
                                   value={action.delay}
                                   onChange={e =>
                                     updateAction(index, {
-                                      delay: Math.max(0, parseInt(e.target.value) || 0),
+                                      delay: +e.target.value,
                                     })
                                   }
                                   data-hs-input-number-input

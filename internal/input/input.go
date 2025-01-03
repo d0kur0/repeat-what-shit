@@ -48,16 +48,13 @@ func SendInput(keys []int) error {
 		isEmulating.Store(false)
 	}()
 
-	// Подготовка массива инпутов для клавиатуры
-	inputs := make([]INPUT, len(keys)*2) // *2 потому что для каждой клавиши нужно down и up
+	inputs := make([]INPUT, len(keys)*2)
 
-	// Нажатия клавиш
 	for i, key := range keys {
 		inputs[i].Type = INPUT_KEYBOARD
 		inputs[i].Ki.Vk = uint16(key)
 	}
 
-	// Отпускания клавиш в обратном порядке
 	for i := 0; i < len(keys); i++ {
 		j := len(keys)*2 - 1 - i
 		inputs[j].Type = INPUT_KEYBOARD

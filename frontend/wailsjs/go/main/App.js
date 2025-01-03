@@ -6,6 +6,10 @@ export function GetData() {
   return window['go']['main']['App']['GetData']();
 }
 
+export function Shutdown() {
+  return window['go']['main']['App']['Shutdown']();
+}
+
 export function StartCapture() {
   return window['go']['main']['App']['StartCapture']();
 }

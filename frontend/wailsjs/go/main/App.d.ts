@@ -4,6 +4,8 @@ import {main} from '../models';
 
 export function GetData():Promise<main.AppData>;
 
+export function Shutdown():Promise<void>;
+
 export function StartCapture():Promise<void>;
 
 export function StopCapture():Promise<void>;

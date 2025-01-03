@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"embed"
+	"log"
+	"repeat-what-shit/internal/logger"
 
 	"github.com/getlantern/systray"
 	"github.com/wailsapp/wails/v2"
@@ -19,34 +21,49 @@ var assets embed.FS
 var icon []byte
 
 func main() {
+	defer logger.RecoverWithLog()
+
+	if err := logger.Init(); err != nil {
+		log.Fatal(err)
+	}
+	defer logger.Close()
+
 	app := NewApp()
+	defer app.Shutdown()
 
 	go systray.Run(func() {
 		systray.SetIcon(icon)
-		systray.SetTitle("repeat-what-shit")
-		systray.SetTooltip("repeat-what-shit")
+		systray.SetTitle(appName)
+		systray.SetTooltip(appName)
 
 		mOpen := systray.AddMenuItem("Открыть", "Открыть главное окно")
 		systray.AddSeparator()
 		mQuit := systray.AddMenuItem("Выход", "Закрыть приложение")
 
 		go func() {
+			defer logger.RecoverWithLog()
 			for {
 				select {
+				case <-app.ctx.Done():
+					return
 				case <-mOpen.ClickedCh:
-					runtime.WindowShow(app.ctx)
+					if app.ctx != nil {
+						runtime.WindowShow(app.ctx)
+					}
 				case <-mQuit.ClickedCh:
 					systray.Quit()
-					runtime.Quit(app.ctx)
+					if app.ctx != nil {
+						runtime.Quit(app.ctx)
+					}
+					return
 				}
 			}
 		}()
 	}, func() {
-		// Cleanup
 	})
 
 	err := wails.Run(&options.App{
-		Title:     "repeat-what-shit",
+		Title:     appName,
 		Width:     700,
 		Height:    600,
 		MinWidth:  700,
@@ -57,6 +74,9 @@ func main() {
 		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
 		OnStartup: func(ctx context.Context) {
 			app.startup(ctx, runtime.Environment(ctx).BuildType != "development")
+		},
+		OnShutdown: func(ctx context.Context) {
+			app.Shutdown()
 		},
 		OnBeforeClose: func(ctx context.Context) bool {
 			runtime.WindowHide(ctx)
@@ -73,6 +93,6 @@ func main() {
 	})
 
 	if err != nil {
-		println("Error:", err.Error())
+		log.Printf("[ERROR] Application error: %v", err)
 	}
 }

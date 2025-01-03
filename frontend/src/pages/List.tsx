@@ -25,7 +25,7 @@ export function List() {
             <div className="flex items-center gap-x-2">
               <div className="text-sm truncate font-bold flex-1">
                 <div className="truncate min-w-0 flex items-center gap-x-1">
-                  <span className="text-xs bg-purple-600 px-1.5 py-0 rounded-lg mb-0.5">
+                  <span className="text-xs bg-pink-300 px-1.5 py-0 text-pink-900 rounded-lg mb-0.5">
                     {MACRO_TYPE_NAMES[macro.type as MacroType] || "Неизвестный"}
                   </span>
                   <span className="truncate min-w-0 text-sm">{macro.name}</span>
@@ -45,7 +45,7 @@ export function List() {
             </div>
 
             <div className="text-xs text-zinc-400">
-              Работает в: {macro.include_titles || "все окна, без ограничения"}
+              {macro.include_titles || "Все окна, без ограничения"}
             </div>
           </button>
         ))}
