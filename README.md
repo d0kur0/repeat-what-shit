@@ -19,37 +19,3 @@
 1. Скачайте последнюю версию из раздела [Releases](https://github.com/d0kur0/repeat-what-shit/releases)
 2. Portable версию можно запустить из любой директории, не требует установки
 3. NSIS версию можно установить в любое место (Это буквально установщик)
-
-## Разработка
-
-Проект использует:
-
-- [Go](https://golang.org/) для бэкенда
-- [Wails](https://wails.io/) для создания десктопного приложения
-- [React](https://reactjs.org/) + [TypeScript](https://www.typescriptlang.org/) для фронтенда
-
-### Подготовка окружения
-
-1. Установите [Go](https://golang.org/dl/)
-2. Установите [Node.js](https://nodejs.org/)
-3. Установите Wails:
-
-```bash
-go install github.com/wailsapp/wails/v2/cmd/wails@latest
-```
-
-### Разработка и сборка
-
-```bash
-# Запуск в режиме разработки (автоматически установит все зависимости)
-wails dev
-
-# Сборка релизной версии
-wails build -platform windows/amd64 -nsis
-```
-
-Wails автоматически:
-
-- Установит все Go-зависимости (`go mod tidy`)
-- Установит npm-пакеты (`npm install`)
-- Создаст исполняемый файл и NSIS-инсталлятор при сборке

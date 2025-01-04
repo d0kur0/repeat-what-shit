@@ -19,6 +19,8 @@ const (
 	WM_MBUTTONDOWN = 0x0207
 	WM_MOUSEWHEEL  = 0x020A
 	WM_XBUTTONDOWN = 0x020B
+
+	LLKHF_INJECTED = 0x00000010 // Флаг для определения эмулированных нажатий
 )
 
 var (
@@ -180,6 +182,11 @@ func (s *HotkeyService) handleEvents() {
 	for {
 		select {
 		case e := <-s.keyboardChannel:
+			// Пропускаем эмулированные нажатия
+			if e.Flags&LLKHF_INJECTED != 0 {
+				continue
+			}
+
 			switch e.Message {
 			case types.WM_KEYDOWN, types.WM_SYSKEYDOWN:
 				key := int(e.VKCode)

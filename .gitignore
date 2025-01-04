@@ -1,3 +1,6 @@
-build/bin
-node_modules
+.idea
+bin/*
 frontend/dist
+frontend/node_modules
+wails.syso
+.task/checksum/*

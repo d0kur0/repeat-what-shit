@@ -22,7 +22,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "wails build -platform windows/amd64 -nsis"
+        "prepareCmd": "go install github.com/go-task/task/v3/cmd/task@latest && task build:windows:prod:amd64 VERSION=${nextRelease.version}"
       }
     ],
     [
