@@ -30,6 +30,7 @@ func (s *JsonStorage[T]) Read() error {
 }
 
 func (s *JsonStorage[T]) Write(data T) error {
+	s.data = data
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return fmt.Errorf("failed to marshal data: %w", err)

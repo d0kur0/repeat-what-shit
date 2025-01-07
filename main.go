@@ -43,7 +43,10 @@ func main() {
 
 	a := internal.App{
 		Storage: appData,
+		Version: consts.Version,
 	}
+
+	a.SetupHotkeys()
 
 	app := application.New(application.Options{
 		LogLevel:    slog.LevelError,
@@ -68,7 +71,6 @@ func createMainWindow(app *application.App) {
 	}
 
 	w := app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-
 		URL:        "/",
 		Width:      consts.AppBaseWidth,
 		Height:     consts.AppBaseHeight,
@@ -98,6 +100,11 @@ func createMainWindow(app *application.App) {
 	tray.SetMenu(trayMenu)
 
 	tray.OnClick(func() {
+		w.UnMinimise()
 		w.Show()
+		w.Focus()
+		w.SetAlwaysOnTop(true)
+		time.Sleep(100 * time.Millisecond)
+		w.SetAlwaysOnTop(false)
 	})
 }

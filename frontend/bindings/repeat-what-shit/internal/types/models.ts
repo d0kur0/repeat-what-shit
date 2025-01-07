@@ -8,14 +8,16 @@ export interface AppData {
 
 export interface Macro {
     "id": string;
+    "disabled": boolean;
     "name": string;
     "activation_keys": number[] | null;
     "type": MacroType;
     "actions": MacroAction[] | null;
-    "include_titles": string;
+    "include_title": string[] | null;
 }
 
 export interface MacroAction {
+    "id": string;
     "keys": number[] | null;
     "delay": number;
 }

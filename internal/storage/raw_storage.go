@@ -30,6 +30,7 @@ func (r *RawStorage) Read() error {
 }
 
 func (r *RawStorage) Write(data []byte) error {
+	r.data = data
 	if err := os.WriteFile(r.filePath, data, 0644); err != nil {
 		return fmt.Errorf("failed to write file: %w", err)
 	}

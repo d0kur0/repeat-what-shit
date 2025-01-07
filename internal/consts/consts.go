@@ -1,12 +1,12 @@
 package consts
 
 const (
-	AppName = "alo"
+	AppName = "repeat-what-shit"
 
-	AppBaseWidth  = 700
+	AppBaseWidth  = 800
 	AppBaseHeight = 600
 
-	AppMinWidth  = 700
+	AppMinWidth  = 800
 	AppMinHeight = 600
 
 	AppDataDirName = ".repeat-what-shit"

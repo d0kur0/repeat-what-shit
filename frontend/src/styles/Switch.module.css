@@ -1,0 +1,47 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+}
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  width: 28px;
+  border: 2px solid hsl(240 5% 84%);
+  border-radius: 12px;
+  padding: 0 2px;
+  transition: 250ms background-color;
+
+  @apply bg-neutral-600 border-neutral-500;
+}
+
+.input:focus-visible + .control {
+  outline: 2px solid hsl(200 98% 39%);
+  outline-offset: 2px;
+}
+
+.control[data-checked] {
+  @apply border-violet-500;
+}
+
+.thumb {
+  height: 12px;
+  width: 12px;
+  border-radius: 10px;
+  transition: 250ms transform;
+
+  @apply bg-neutral-400;
+}
+
+.thumb[data-checked] {
+  transform: translateX(calc(100% + -3px));
+  @apply bg-violet-400;
+}
+
+.label {
+  margin-right: 6px;
+  color: hsl(240 6% 10%);
+  font-size: 14px;
+  user-select: none;
+}

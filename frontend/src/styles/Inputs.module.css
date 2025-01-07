@@ -1,0 +1,21 @@
+.input {
+  @apply bg-neutral-900 rounded-xl px-3 py-2 block text-left border-2 border-neutral-700 w-full;
+  font-size: 0.9em;
+}
+
+.input:focus {
+  @apply outline-none border-violet-700;
+}
+
+.inputContainer {
+}
+
+.label {
+  @apply text-neutral-400 text-sm pl-0.5 mb-1;
+}
+
+.error {
+  @apply text-sm pl-0.5 text-red-400 flex items-center gap-1;
+  height: 20px;
+  font-size: 0.8rem;
+}

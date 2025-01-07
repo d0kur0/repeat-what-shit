@@ -8,9 +8,37 @@ import {Call as $Call} from "@wailsio/runtime";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as types$0 from "./types/models.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as utils$0 from "./utils/models.js";
+
+export function GetVersion(): Promise<string> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(3718814993) as any;
+    return $resultPromise;
+}
+
+export function GetWindowList(): Promise<utils$0.WindowInfo[] | null> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(2414998679) as any;
+    return $resultPromise;
+}
 
 export function ReadAppData(): Promise<types$0.AppData> & { cancel(): void } {
     let $resultPromise = $Call.ByID(3580827948) as any;
+    return $resultPromise;
+}
+
+export function SetupHotkeys(): Promise<void> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(1876575561) as any;
+    return $resultPromise;
+}
+
+export function StartCapture(): Promise<void> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(3920081727) as any;
+    return $resultPromise;
+}
+
+export function StopCapture(): Promise<void> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(3208278569) as any;
     return $resultPromise;
 }
 

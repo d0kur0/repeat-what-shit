@@ -1,0 +1,32 @@
+.root {
+  @apply bg-neutral-900 rounded-xl px-3 py-2 block text-left border-2 border-neutral-700 w-full relative cursor-pointer;
+
+  font-size: 0.9em;
+  height: 40px;
+}
+
+.label {
+  @apply absolute bg-neutral-800 px-2 rounded-xl border border-neutral-700;
+
+  top: -9px;
+  right: 16px;
+  font-size: 0.7em;
+}
+
+.root:focus {
+  @apply outline-none border-violet-700;
+}
+
+.keys {
+  @apply flex flex-wrap gap-1;
+}
+
+.key {
+  @apply bg-neutral-800 px-2 rounded-md border border-neutral-700;
+  font-size: 0.8em;
+}
+
+.separator {
+  @apply text-neutral-400;
+  font-size: 0.8em;
+}

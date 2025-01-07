@@ -2,12 +2,12 @@ export const KEYBOARD_KEYS = {
   SHIFT: 0x10,
   CTRL: 0x11,
   ALT: 0x12,
-  LEFT_SHIFT: 0xa0,
-  RIGHT_SHIFT: 0xa1,
-  LEFT_CTRL: 0xa2,
-  RIGHT_CTRL: 0xa3,
-  LEFT_ALT: 0xa4,
-  RIGHT_ALT: 0xa5,
+  "LEFT SHIFT": 0xa0,
+  "RIGHT SHIFT": 0xa1,
+  "LEFT CTRL": 0xa2,
+  "RIGHT CTRL": 0xa3,
+  "LEFT ALT": 0xa4,
+  "RIGHT ALT": 0xa5,
 
   F1: 0x70,
   F2: 0x71,
@@ -24,14 +24,14 @@ export const KEYBOARD_KEYS = {
 
   ESCAPE: 0x1b,
   TAB: 0x09,
-  CAPS_LOCK: 0x14,
-  SCROLL_LOCK: 0x91,
-  NUM_LOCK: 0x90,
+  "CAPS LOCK": 0x14,
+  "SCROLL LOCK": 0x91,
+  "NUM LOCK": 0x90,
   BACKSPACE: 0x08,
   ENTER: 0x0d,
   SPACE: 0x20,
-  PAGE_UP: 0x21,
-  PAGE_DOWN: 0x22,
+  "PAGE UP": 0x21,
+  "PAGE DOWN": 0x22,
   END: 0x23,
   HOME: 0x24,
   INSERT: 0x2d,
@@ -42,16 +42,16 @@ export const KEYBOARD_KEYS = {
   RIGHT: 0x27,
   DOWN: 0x28,
 
-  KEY_0: 0x30,
-  KEY_1: 0x31,
-  KEY_2: 0x32,
-  KEY_3: 0x33,
-  KEY_4: 0x34,
-  KEY_5: 0x35,
-  KEY_6: 0x36,
-  KEY_7: 0x37,
-  KEY_8: 0x38,
-  KEY_9: 0x39,
+  "0": 0x30,
+  "1": 0x31,
+  "2": 0x32,
+  "3": 0x33,
+  "4": 0x34,
+  "5": 0x35,
+  "6": 0x36,
+  "7": 0x37,
+  "8": 0x38,
+  "9": 0x39,
 
   A: 0x41,
   B: 0x42,
@@ -80,16 +80,16 @@ export const KEYBOARD_KEYS = {
   Y: 0x59,
   Z: 0x5a,
 
-  NUMPAD0: 0x60,
-  NUMPAD1: 0x61,
-  NUMPAD2: 0x62,
-  NUMPAD3: 0x63,
-  NUMPAD4: 0x64,
-  NUMPAD5: 0x65,
-  NUMPAD6: 0x66,
-  NUMPAD7: 0x67,
-  NUMPAD8: 0x68,
-  NUMPAD9: 0x69,
+  "NUMPAD 0": 0x60,
+  "NUMPAD 1": 0x61,
+  "NUMPAD 2": 0x62,
+  "NUMPAD 3": 0x63,
+  "NUMPAD 4": 0x64,
+  "NUMPAD 5": 0x65,
+  "NUMPAD 6": 0x66,
+  "NUMPAD 7": 0x67,
+  "NUMPAD 8": 0x68,
+  "NUMPAD 9": 0x69,
   MULTIPLY: 0x6a,
   ADD: 0x6b,
   SUBTRACT: 0x6d,
@@ -108,40 +108,40 @@ export const KEYBOARD_KEYS = {
   BRACKET_RIGHT: 0xdd,
   QUOTE: 0xde,
 
-  VOLUME_MUTE: 0xad,
-  VOLUME_DOWN: 0xae,
-  VOLUME_UP: 0xaf,
-  MEDIA_NEXT: 0xb0,
-  MEDIA_PREV: 0xb1,
-  MEDIA_STOP: 0xb2,
-  MEDIA_PLAY_PAUSE: 0xb3,
+  "VOLUME MUTE": 0xad,
+  "VOLUME DOWN": 0xae,
+  "VOLUME UP": 0xaf,
+  "MEDIA NEXT": 0xb0,
+  "MEDIA PREV": 0xb1,
+  "MEDIA STOP": 0xb2,
+  "MEDIA PLAY PAUSE": 0xb3,
 
-  PRINT_SCREEN: 0x2c,
-  PAUSE_BREAK: 0x13,
+  "PRINT SCREEN": 0x2c,
+  "PAUSE BREAK": 0x13,
   WIN: 0x5b,
   MENU: 0x5d,
 
-  LEFT_MOUSE: 0x0201,
-  RIGHT_MOUSE: 0x0204,
-  MIDDLE_MOUSE: 0x0207,
+  ЛКМ: 0x0201,
+  ПКМ: 0x0204,
+  "Колесо мыши": 0x0207,
 
   XBUTTON1: 0x020b | (0x0001 << 16),
   XBUTTON2: 0x020b | (0x0002 << 16),
 
-  WHEEL_UP: 0x020a | 0x10000,
-  WHEEL_DOWN: 0x020a | 0x20000,
+  "Колесо вверх": 0x020a | 0x10000,
+  "Колесо вниз": 0x020a | 0x20000,
 };
 
 export const MODIFIERS = [
   KEYBOARD_KEYS.SHIFT,
-  KEYBOARD_KEYS.LEFT_SHIFT,
-  KEYBOARD_KEYS.RIGHT_SHIFT,
+  KEYBOARD_KEYS["LEFT SHIFT"],
+  KEYBOARD_KEYS["RIGHT SHIFT"],
   KEYBOARD_KEYS.CTRL,
-  KEYBOARD_KEYS.LEFT_CTRL,
-  KEYBOARD_KEYS.RIGHT_CTRL,
+  KEYBOARD_KEYS["LEFT CTRL"],
+  KEYBOARD_KEYS["RIGHT CTRL"],
   KEYBOARD_KEYS.ALT,
-  KEYBOARD_KEYS.LEFT_ALT,
-  KEYBOARD_KEYS.RIGHT_ALT,
+  KEYBOARD_KEYS["LEFT ALT"],
+  KEYBOARD_KEYS["RIGHT ALT"],
 ];
 
 export function getKeyName(code: number): string {
@@ -149,11 +149,11 @@ export function getKeyName(code: number): string {
     (key) => KEYBOARD_KEYS[key as keyof typeof KEYBOARD_KEYS] === code
   );
 
-  return key || `Unknown (${code})`;
+  return key || `Клавиша (${code})`;
 }
 
 export function sortKeyCombo(combo: number[]): number[] {
-  return combo.sort((a, b) => {
+  return [...combo].sort((a, b) => {
     const aIsModifier = MODIFIERS.includes(a);
     const bIsModifier = MODIFIERS.includes(b);
 
