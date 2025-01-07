@@ -30,7 +30,11 @@ func (a *App) SetupHotkeys() {
 		if a.captureMode {
 			if len(combo) > 0 && !equalCombos(combo, a.lastCombo) {
 				a.lastCombo = append([]int(nil), combo...)
-				application.Get().EmitEvent("captured_combo", combo)
+				time.Sleep(40 * time.Millisecond)
+				currentCombo := a.HotkeyService.GetPressedKeys()
+				if len(currentCombo) > 0 {
+					application.Get().EmitEvent("captured_combo", currentCombo)
+				}
 			}
 			return
 		}

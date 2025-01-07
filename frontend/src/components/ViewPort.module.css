@@ -8,8 +8,11 @@
   @apply bg-neutral-900 flex items-center gap-4 pl-4 border-b border-neutral-700 text-fuchsia-300;
   height: var(--title-height);
   font-size: 0.77em;
+}
 
+.draggable {
   --wails-draggable: drag;
+  height: 100%;
 }
 
 .content {

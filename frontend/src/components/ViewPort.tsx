@@ -40,7 +40,7 @@ export function ViewPort({ title, children, subContent }: ViewPortProps) {
           <div class={styles.appSubName}>{title}</div>
         </button>
 
-        <div class="flex-1" />
+        <div class={styles.draggable} />
 
         <div class={styles.subContent}>{subContent}</div>
 
