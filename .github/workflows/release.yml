@@ -25,6 +25,12 @@ jobs:
         with:
           go-version: ">=1.21.0"
 
+      - name: Setup Deps
+        run: |
+          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh') &&
+          scoop bucket add extras &&
+          scoop install nsis upx
+
       - name: Install semantic-release and plugins
         run: |
           npm install -g semantic-release
@@ -37,7 +43,7 @@ jobs:
         run: cd frontend && npm install
 
       - name: Install Wails
-        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+        run: go install -v github.com/wailsapp/wails/v3/cmd/wails3@latest
 
       - name: Release
         env:

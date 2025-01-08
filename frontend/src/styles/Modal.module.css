@@ -1,0 +1,93 @@
+.dialogOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: rgb(17 3 5 / 66%);
+  animation: overlayHide 250ms ease 100ms forwards;
+}
+
+.dialogOverlay[data-expanded] {
+  animation: overlayShow 250ms ease;
+}
+
+.dialogPositioner {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialogContent {
+  @apply bg-neutral-800 p-4 px-6 rounded-lg text-neutral-200 shadow-md shadow-zinc-600;
+  z-index: 50;
+  min-width: 400px;
+  max-width: min(calc(100vw - 16px), 500px);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  animation: contentHide 300ms ease-in forwards;
+}
+
+.dialogContent[data-expanded] {
+  animation: contentShow 300ms ease-out;
+}
+
+.dialogHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.dialogCloseButton {
+  font-size: 1.2em;
+}
+
+.dialogTitle {
+  font-size: 1em;
+  font-weight: 500;
+}
+
+.dialogDescription {
+  font-size: 16px;
+}
+
+@keyframes overlayShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes overlayHide {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes contentShow {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes contentHide {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}

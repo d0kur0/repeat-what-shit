@@ -1,0 +1,24 @@
+.titleBtn {
+  @apply bg-fuchsia-500 rounded-md px-2 text-fuchsia-50;
+  transition: all 0.2s ease-in-out;
+}
+
+.titleBtn:hover {
+  @apply bg-fuchsia-600;
+}
+
+.titleBtnSave {
+  @apply bg-green-300 text-green-950;
+}
+
+.titleBtnSave:hover {
+  @apply bg-green-400;
+}
+
+.titleBtnRemove {
+  @apply bg-red-400;
+}
+
+.titleBtnRemove:hover {
+  @apply bg-red-500;
+}

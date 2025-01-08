@@ -1,98 +1,110 @@
 package main
 
 import (
-	"context"
 	"embed"
+	"fmt"
 	"log"
-	"repeat-what-shit/internal/logger"
+	"log/slog"
+	"repeat-what-shit/internal"
+	"repeat-what-shit/internal/consts"
+	"repeat-what-shit/internal/storage"
+	"repeat-what-shit/internal/types"
+	"repeat-what-shit/internal/utils"
+	"runtime/debug"
+	"time"
 
-	"github.com/getlantern/systray"
-	"github.com/wailsapp/wails/v2"
-	"github.com/wailsapp/wails/v2/pkg/options"
-	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
-	"github.com/wailsapp/wails/v2/pkg/options/windows"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"github.com/wailsapp/wails/v3/pkg/application"
+	"github.com/wailsapp/wails/v3/pkg/events"
 )
 
-//go:embed all:frontend/dist
-var assets embed.FS
+//go:embed frontend/dist
+var uiAssets embed.FS
 
-//go:embed build/appicon.ico
-var icon []byte
+//go:embed build/appicon.png
+var appIcon []byte
 
 func main() {
-	defer logger.RecoverWithLog()
+	appDir, err := utils.GetAppDirPath()
+	utils.Catch(err)
 
-	if err := logger.Init(); err != nil {
-		log.Fatal(err)
+	defer func() {
+		if r := recover(); r != nil {
+			crashLog := fmt.Sprintf("Panic: %v\n\nStack Trace:\n%s", r, debug.Stack())
+			s := storage.NewRawStorage(fmt.Sprintf("%s/crash_%s.log", appDir, time.Now().Format("2006-01-02_15-04-05")))
+			s.Write([]byte(crashLog))
+			log.Println(crashLog)
+		}
+	}()
+
+	utils.Catch(utils.CreateAppDirIfNotExists())
+
+	appData := storage.NewJsonStorage(fmt.Sprintf("%s/data.json", appDir), types.AppData{})
+	utils.Catch(appData.Read())
+
+	a := internal.App{
+		Storage: appData,
+		Version: consts.Version,
 	}
-	defer logger.Close()
 
-	app := NewApp()
-	defer app.Shutdown()
+	a.SetupHotkeys()
 
-	go systray.Run(func() {
-		systray.SetIcon(icon)
-		systray.SetTitle(appName)
-		systray.SetTooltip(appName)
-
-		mOpen := systray.AddMenuItem("Открыть", "Открыть главное окно")
-		systray.AddSeparator()
-		mQuit := systray.AddMenuItem("Выход", "Закрыть приложение")
-
-		go func() {
-			defer logger.RecoverWithLog()
-			for {
-				select {
-				case <-app.ctx.Done():
-					return
-				case <-mOpen.ClickedCh:
-					if app.ctx != nil {
-						runtime.WindowShow(app.ctx)
-					}
-				case <-mQuit.ClickedCh:
-					systray.Quit()
-					if app.ctx != nil {
-						runtime.Quit(app.ctx)
-					}
-					return
-				}
-			}
-		}()
-	}, func() {
-	})
-
-	err := wails.Run(&options.App{
-		Title:     appName,
-		Width:     700,
-		Height:    600,
-		MinWidth:  700,
-		MinHeight: 600,
-		AssetServer: &assetserver.Options{
-			Assets: assets,
+	app := application.New(application.Options{
+		LogLevel:    slog.LevelError,
+		Name:        consts.AppName,
+		Description: "Repeat what shit",
+		Services: []application.Service{
+			application.NewService(&a),
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup: func(ctx context.Context) {
-			app.startup(ctx, runtime.Environment(ctx).BuildType != "development")
-		},
-		OnShutdown: func(ctx context.Context) {
-			app.Shutdown()
-		},
-		OnBeforeClose: func(ctx context.Context) bool {
-			runtime.WindowHide(ctx)
-			return false
-		},
-		Bind: []interface{}{
-			app,
-		},
-		Frameless: true,
-		Windows: &windows.Options{
-			WebviewIsTransparent: true,
-			WindowIsTranslucent:  true,
+		Assets: application.AssetOptions{
+			Handler: application.AssetFileServerFS(uiAssets),
 		},
 	})
 
-	if err != nil {
-		log.Printf("[ERROR] Application error: %v", err)
+	createMainWindow(app)
+	app.Run()
+}
+
+func createMainWindow(app *application.App) {
+	mainWindowStartState := application.WindowStateNormal
+	if !consts.IsProduction {
+		mainWindowStartState = application.WindowStateMinimised
 	}
+
+	w := app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
+		URL:        "/",
+		Width:      consts.AppBaseWidth,
+		Height:     consts.AppBaseHeight,
+		MinWidth:   consts.AppMinWidth,
+		MinHeight:  consts.AppMinHeight,
+		Title:      consts.AppName,
+		StartState: mainWindowStartState,
+		Frameless:  true,
+		Centered:   true,
+	})
+
+	w.RegisterHook(events.Common.WindowClosing, func(event *application.WindowEvent) {
+		app.Quit()
+	})
+
+	tray := app.NewSystemTray()
+	tray.SetLabel(consts.AppName)
+	tray.SetIcon(appIcon)
+	tray.SetDarkModeIcon(appIcon)
+
+	trayMenu := app.NewMenu()
+
+	trayMenu.Add("Close").OnClick(func(_ *application.Context) {
+		app.Quit()
+	})
+
+	tray.SetMenu(trayMenu)
+
+	tray.OnClick(func() {
+		w.UnMinimise()
+		w.Show()
+		w.Focus()
+		w.SetAlwaysOnTop(true)
+		time.Sleep(100 * time.Millisecond)
+		w.SetAlwaysOnTop(false)
+	})
 }

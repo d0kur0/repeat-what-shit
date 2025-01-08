@@ -1,0 +1,70 @@
+.root {
+  @apply h-screen bg-neutral-800 text-neutral-300;
+
+  --title-height: 36px;
+}
+
+.title {
+  @apply bg-neutral-900 flex items-center gap-4 pl-4 border-b border-neutral-700 text-fuchsia-300;
+  height: var(--title-height);
+  font-size: 0.77em;
+}
+
+.draggable {
+  --wails-draggable: drag;
+  height: 100%;
+}
+
+.content {
+  height: calc(100vh - var(--title-height));
+  scrollbar-gutter: stable;
+  overflow-y: auto;
+  @apply p-4;
+}
+
+.app {
+  @apply flex items-center gap-2;
+}
+
+.appIcon {
+  @apply w-5 h-5;
+}
+
+.appName {
+  @apply mt-1 cursor-pointer;
+  font-weight: 600;
+}
+
+.subContent {
+  @apply mt-0.5;
+}
+
+.version {
+  @apply text-fuchsia-200;
+  font-size: 0.8em;
+}
+
+.appArrow {
+  @apply mt-1;
+  font-size: 1.2em;
+}
+
+.appSubName {
+  @apply mt-1;
+  font-weight: 600;
+}
+
+.closeButton {
+  font-size: 1.3em;
+  width: var(--title-height);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @apply text-neutral-400;
+  transition: all 0.2s ease-in-out;
+}
+
+.closeButton:hover {
+  @apply bg-neutral-800 text-neutral-200;
+}

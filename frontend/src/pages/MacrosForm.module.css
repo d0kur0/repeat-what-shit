@@ -1,0 +1,142 @@
+.types {
+  @apply grid grid-cols-3 gap-4;
+}
+
+.typesTitle {
+  @apply text-neutral-400 mb-2;
+  font-size: 0.9em;
+}
+
+.type {
+  @apply flex flex-col gap-1 text-left bg-neutral-900 p-4 rounded-lg border-2 border-neutral-800;
+}
+
+.typeActive {
+  @apply border-violet-700;
+}
+
+.typeTitle {
+  @apply font-bold;
+}
+
+.typeDescription {
+  @apply text-neutral-400;
+  font-size: 0.8em;
+}
+
+.actionsTitle {
+  @apply text-neutral-300 mb-2 mt-5 flex gap-3 items-center justify-between;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+.addActionBtn {
+  @apply bg-violet-700 text-white px-2 py-0.5 rounded-md;
+  font-size: 0.7em;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.addActionBtn:hover {
+  @apply bg-violet-800;
+}
+
+.actions {
+  @apply mt-4;
+}
+
+.action {
+  @apply grid gap-3 grid-cols-12;
+}
+
+.action > *:nth-child(1) {
+  @apply col-span-8;
+}
+
+.action > *:nth-child(2) {
+  @apply col-span-2;
+}
+
+.action > *:nth-child(3) {
+  @apply col-span-2;
+}
+
+.removeActionBtn {
+  @apply border-2 border-dashed border-red-500 text-white px-3 py-0.5 rounded-md text-red-500;
+  font-size: 0.8em;
+  transition: background-color 0.2s ease-in-out;
+  height: 40px;
+  margin-bottom: 20px;
+}
+
+.actionsFallback {
+  @apply text-neutral-400 border-2 border-dashed border-neutral-400 rounded-md p-2 py-8;
+  font-size: 0.8em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.includeTitleTitle {
+  @apply text-neutral-400;
+  font-size: 0.9em;
+}
+
+.includeTitleDescription {
+  @apply text-neutral-500;
+  font-size: 0.8em;
+}
+
+.includeTitlesBtn {
+  @apply bg-fuchsia-400 px-3 py-0.5 rounded-md text-neutral-800;
+  font-size: 0.7em;
+  transition: background-color 0.2s ease-in-out;
+  font-weight: 700;
+}
+
+.includeTitlesBtn:hover {
+  @apply bg-fuchsia-300;
+}
+
+.includeTitles {
+  @apply mb-6 mt-2 flex gap-2 flex-wrap;
+  font-size: 0.8em;
+}
+
+.windows {
+  @apply mt-5;
+  overflow: auto;
+  max-height: 400px;
+}
+
+.window {
+  @apply flex gap-3 items-center text-left w-full py-1 px-2;
+  transition: 0.3s;
+}
+
+.window:hover {
+  @apply bg-neutral-900;
+}
+
+.windowIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.windowIconContainer {
+  width: 16px;
+}
+
+.windowBadge {
+  @apply bg-blue-500 px-2 py-0.5 rounded-xl flex gap-1 items-center;
+  font-weight: 600;
+}
+
+.windowBadge:hover {
+  @apply bg-blue-600;
+  transition: 0.3s;
+}
+
+.alreadyAddedBadge {
+  font-size: 0.7em;
+  font-weight: 600;
+  @apply bg-purple-400 text-neutral-800 px-2 rounded-xl;
+}

@@ -1,15 +1,13 @@
 package input
 
 import (
-	"sync/atomic"
 	"syscall"
 	"unsafe"
 )
 
 var (
-	isEmulating atomic.Bool
-	user32      = syscall.NewLazyDLL("user32.dll")
-	sendInput   = user32.NewProc("SendInput")
+	user32    = syscall.NewLazyDLL("user32.dll")
+	sendInput = user32.NewProc("SendInput")
 )
 
 const (
@@ -17,6 +15,8 @@ const (
 	INPUT_MOUSE    = 0
 
 	KEYEVENTF_KEYUP = 0x0002
+	LLKHF_INJECTED  = 0x10
+	EMULATED_FLAG   = 0xBADF00D
 )
 
 type INPUT struct {
@@ -32,27 +32,17 @@ type INPUT struct {
 	}
 }
 
-// IsEmulating возвращает true если сейчас идет эмуляция ввода
-func IsEmulating() bool {
-	return isEmulating.Load()
-}
-
-// SendInput отправляет событие ввода (клавиатура или мышь)
 func SendInput(keys []int) error {
 	if len(keys) == 0 {
 		return nil
 	}
-
-	isEmulating.Store(true)
-	defer func() {
-		isEmulating.Store(false)
-	}()
 
 	inputs := make([]INPUT, len(keys)*2)
 
 	for i, key := range keys {
 		inputs[i].Type = INPUT_KEYBOARD
 		inputs[i].Ki.Vk = uint16(key)
+		inputs[i].Ki.ExtraInfo = EMULATED_FLAG
 	}
 
 	for i := 0; i < len(keys); i++ {
@@ -60,6 +50,7 @@ func SendInput(keys []int) error {
 		inputs[j].Type = INPUT_KEYBOARD
 		inputs[j].Ki.Vk = uint16(keys[len(keys)-1-i])
 		inputs[j].Ki.Flags = KEYEVENTF_KEYUP
+		inputs[j].Ki.ExtraInfo = EMULATED_FLAG
 	}
 
 	ret, _, err := sendInput.Call(
@@ -67,8 +58,10 @@ func SendInput(keys []int) error {
 		uintptr(unsafe.Pointer(&inputs[0])),
 		unsafe.Sizeof(INPUT{}),
 	)
+
 	if ret == 0 {
 		return err
 	}
+
 	return nil
 }

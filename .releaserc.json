@@ -9,11 +9,11 @@
       {
         "assets": [
           {
-            "path": "build/bin/repeat-what-shit-amd64-installer.exe",
-            "label": "repeat-what-shit.exe (NSIS Installer)"
+            "path": "bin/repeat-what-shit-amd64-installer.exe",
+            "label": "repeat-what-shit-amd64-installer.exe (NSIS Installer)"
           },
           {
-            "path": "build/bin/repeat-what-shit.exe",
+            "path": "bin/repeat-what-shit.exe",
             "label": "repeat-what-shit.exe (Portable)"
           }
         ]
@@ -22,7 +22,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "wails build -platform windows/amd64 -nsis"
+        "prepareCmd": "go install github.com/go-task/task/v3/cmd/task@latest && task build:windows:prod:amd64 VERSION=${nextRelease.version}"
       }
     ],
     [
