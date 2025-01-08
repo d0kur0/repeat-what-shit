@@ -9,11 +9,11 @@
       {
         "assets": [
           {
-            "path": "build/bin/repeat-what-shit-amd64-installer.exe",
-            "label": "repeat-what-shit.exe (NSIS Installer)"
+            "path": "bin/repeat-what-shit-amd64-installer.exe",
+            "label": "repeat-what-shit-amd64-installer.exe (NSIS Installer)"
           },
           {
-            "path": "build/bin/repeat-what-shit.exe",
+            "path": "bin/repeat-what-shit.exe",
             "label": "repeat-what-shit.exe (Portable)"
           }
         ]
