@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/d0kur0/repeat-what-shit/compare/v1.2.0...v1.2.1) (2025-01-10)
+
+
+### Bug Fixes
+
+* fuck w32 ([51bc8cc](https://github.com/d0kur0/repeat-what-shit/commit/51bc8ccc76ef2c155b7db0750af47b6ecfe9c0e0))
+
 # [1.2.0](https://github.com/d0kur0/repeat-what-shit/compare/v1.1.0...v1.2.0) (2025-01-08)
 
 
