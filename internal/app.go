@@ -134,7 +134,6 @@ func (a *App) executeHoldMacro(macro types.Macro, stopCh chan bool) {
 				}
 				return
 			}
-			time.Sleep(10 * time.Millisecond)
 		}
 	}
 }

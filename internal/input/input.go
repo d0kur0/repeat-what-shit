@@ -2,6 +2,7 @@ package input
 
 import (
 	"syscall"
+	"time"
 	"unsafe"
 )
 
@@ -36,23 +37,34 @@ func SendInput(keys []int) error {
 		return nil
 	}
 
-	inputs := make([]INPUT, len(keys)*2)
-
+	// Сначала нажимаем все клавиши
+	inputs := make([]INPUT, len(keys))
 	for i, key := range keys {
 		inputs[i].Type = INPUT_KEYBOARD
 		inputs[i].Ki.Vk = uint16(key)
 		inputs[i].Ki.ExtraInfo = EMULATED_FLAG
 	}
 
-	for i := 0; i < len(keys); i++ {
-		j := len(keys)*2 - 1 - i
-		inputs[j].Type = INPUT_KEYBOARD
-		inputs[j].Ki.Vk = uint16(keys[len(keys)-1-i])
-		inputs[j].Ki.Flags = KEYEVENTF_KEYUP
-		inputs[j].Ki.ExtraInfo = EMULATED_FLAG
+	ret, _, err := sendInput.Call(
+		uintptr(len(inputs)),
+		uintptr(unsafe.Pointer(&inputs[0])),
+		unsafe.Sizeof(INPUT{}),
+	)
+
+	if ret == 0 {
+		return err
 	}
 
-	ret, _, err := sendInput.Call(
+	time.Sleep(10 * time.Millisecond)
+
+	for i := range keys {
+		inputs[i].Type = INPUT_KEYBOARD
+		inputs[i].Ki.Vk = uint16(keys[i])
+		inputs[i].Ki.Flags = KEYEVENTF_KEYUP
+		inputs[i].Ki.ExtraInfo = EMULATED_FLAG
+	}
+
+	ret, _, err = sendInput.Call(
 		uintptr(len(inputs)),
 		uintptr(unsafe.Pointer(&inputs[0])),
 		unsafe.Sizeof(INPUT{}),
