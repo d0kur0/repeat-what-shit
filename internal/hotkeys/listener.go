@@ -2,8 +2,8 @@ package hotkeys
 
 import (
 	"context"
+	"repeat-what-shit/internal/input"
 	"sync"
-	"syscall"
 
 	"github.com/moutend/go-hook/pkg/keyboard"
 	"github.com/moutend/go-hook/pkg/mouse"
@@ -16,26 +16,23 @@ const (
 	WM_MBUTTONDOWN = 0x0207
 	WM_MOUSEWHEEL  = 0x020A
 	WM_XBUTTONDOWN = 0x020B
-
-	LLKHF_INJECTED = 0x00000010
 )
 
-var (
-	user32           = syscall.NewLazyDLL("user32.dll")
-	getAsyncKeyState = user32.NewProc("GetAsyncKeyState")
-)
+type KeyCombo struct {
+	Keys []int
+	Time uint32
+}
 
-type KeyCombo []int
-type KeyComboHandler func(combo KeyCombo, includeTitles string)
+type KeyComboHandler func(combo KeyCombo)
 
 type HotkeyService struct {
 	keyboardChannel chan types.KeyboardEvent
 	mouseChannel    chan types.MouseEvent
 	handler         KeyComboHandler
-	pressedKeys     []int
+	pressedKeys     map[int]struct{}
 	cancelMu        sync.Mutex
 	cancelMap       map[int]context.CancelFunc
-	emulatedKeys    map[int]bool
+	lastEventTime   uint32
 }
 
 var globalService *HotkeyService
@@ -44,9 +41,8 @@ func NewHotkeyService() *HotkeyService {
 	service := &HotkeyService{
 		keyboardChannel: make(chan types.KeyboardEvent),
 		mouseChannel:    make(chan types.MouseEvent),
-		pressedKeys:     make([]int, 0, 4),
+		pressedKeys:     make(map[int]struct{}),
 		cancelMap:       make(map[int]context.CancelFunc),
-		emulatedKeys:    make(map[int]bool),
 	}
 	globalService = service
 	return service
@@ -73,12 +69,10 @@ func (s *HotkeyService) Stop() {
 }
 
 func (s *HotkeyService) isKeyPressed(key int) bool {
-	for _, k := range s.pressedKeys {
-		if k == key {
-			return true
-		}
-	}
-	return false
+	s.cancelMu.Lock()
+	defer s.cancelMu.Unlock()
+	_, exists := s.pressedKeys[key]
+	return exists
 }
 
 func (s *HotkeyService) cancelEmulation(key int) {
@@ -94,13 +88,7 @@ func (s *HotkeyService) handleEvents() {
 	for {
 		select {
 		case e := <-s.keyboardChannel:
-			if e.Flags&LLKHF_INJECTED != 0 {
-				key := int(e.VKCode)
-				if e.Message == types.WM_KEYDOWN || e.Message == types.WM_SYSKEYDOWN {
-					s.emulatedKeys[key] = true
-				} else if e.Message == types.WM_KEYUP || e.Message == types.WM_SYSKEYUP {
-					delete(s.emulatedKeys, key)
-				}
+			if uint32(e.DWExtraInfo) == input.EMULATED_FLAG {
 				continue
 			}
 
@@ -108,36 +96,44 @@ func (s *HotkeyService) handleEvents() {
 			case types.WM_KEYDOWN, types.WM_SYSKEYDOWN:
 				key := int(e.VKCode)
 
-				if !s.isKeyPressed(key) {
-					s.pressedKeys = append(s.pressedKeys, key)
-
-					_, cancel := context.WithCancel(context.Background())
-					s.cancelMu.Lock()
-					s.cancelMap[key] = cancel
-					s.cancelMu.Unlock()
+				if s.isKeyPressed(key) {
+					continue
 				}
 
+				s.cancelMu.Lock()
+				s.pressedKeys[key] = struct{}{}
+				s.lastEventTime = e.Time
+				s.cancelMu.Unlock()
+
+				_, cancel := context.WithCancel(context.Background())
+				s.cancelMu.Lock()
+				s.cancelMap[key] = cancel
+				s.cancelMu.Unlock()
+
 				if s.handler != nil {
-					go s.handler(append([]int(nil), s.pressedKeys...), "")
+					combo := KeyCombo{
+						Keys: append([]int(nil), s.GetPressedKeys()...),
+						Time: e.Time,
+					}
+					go s.handler(combo)
 				}
 
 			case types.WM_KEYUP, types.WM_SYSKEYUP:
 				key := int(e.VKCode)
-				if s.emulatedKeys[key] {
-					continue
-				}
 
 				s.cancelEmulation(key)
 
-				for i, k := range s.pressedKeys {
-					if k == key {
-						s.pressedKeys = append(s.pressedKeys[:i], s.pressedKeys[i+1:]...)
-						break
-					}
-				}
+				s.cancelMu.Lock()
+				delete(s.pressedKeys, key)
+				s.lastEventTime = e.Time
+				s.cancelMu.Unlock()
 
 				if s.handler != nil {
-					go s.handler(append([]int(nil), s.pressedKeys...), "")
+					combo := KeyCombo{
+						Keys: append([]int(nil), s.GetPressedKeys()...),
+						Time: e.Time,
+					}
+					go s.handler(combo)
 				}
 			}
 
@@ -151,16 +147,28 @@ func (s *HotkeyService) handleEvents() {
 					} else {
 						wheelEvent |= 0x20000
 					}
-					go s.handler([]int{wheelEvent}, "")
+					combo := KeyCombo{
+						Keys: []int{wheelEvent},
+						Time: e.Time,
+					}
+					go s.handler(combo)
 				}
 			case WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN:
 				if s.handler != nil {
-					go s.handler([]int{int(e.Message)}, "")
+					combo := KeyCombo{
+						Keys: []int{int(e.Message)},
+						Time: e.Time,
+					}
+					go s.handler(combo)
 				}
 			case WM_XBUTTONDOWN:
 				if s.handler != nil {
 					mouseEvent := int(e.Message) | int(e.MouseData>>16)<<16
-					go s.handler([]int{mouseEvent}, "")
+					combo := KeyCombo{
+						Keys: []int{mouseEvent},
+						Time: e.Time,
+					}
+					go s.handler(combo)
 				}
 			}
 		}
@@ -168,7 +176,14 @@ func (s *HotkeyService) handleEvents() {
 }
 
 func (s *HotkeyService) GetPressedKeys() []int {
-	return append([]int(nil), s.pressedKeys...)
+	s.cancelMu.Lock()
+	defer s.cancelMu.Unlock()
+
+	pressed := make([]int, 0, len(s.pressedKeys))
+	for key := range s.pressedKeys {
+		pressed = append(pressed, key)
+	}
+	return pressed
 }
 
 func IsComboPressed(combo []int) bool {
@@ -190,9 +205,4 @@ func IsComboPressed(combo []int) bool {
 		}
 	}
 	return true
-}
-
-func isKeyPressed(key int) bool {
-	ret, _, _ := getAsyncKeyState.Call(uintptr(key))
-	return (ret & 0x8000) != 0
 }

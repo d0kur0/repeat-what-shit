@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"log"
 	"repeat-what-shit/internal/hotkeys"
 	"repeat-what-shit/internal/input"
 	"repeat-what-shit/internal/storage"
@@ -18,6 +19,7 @@ type App struct {
 	HotkeyService *hotkeys.HotkeyService
 	captureMode   bool
 	lastCombo     []int
+	lastComboTime uint32
 
 	activeMacros map[string]chan bool
 }
@@ -26,15 +28,22 @@ func (a *App) SetupHotkeys() {
 	a.activeMacros = make(map[string]chan bool)
 	a.HotkeyService = hotkeys.NewHotkeyService()
 
-	a.HotkeyService.Start(func(combo hotkeys.KeyCombo, includeTitles string) {
+	a.HotkeyService.Start(func(combo hotkeys.KeyCombo) {
+		log.Println(combo.Keys)
+
 		if a.captureMode {
-			if len(combo) > 0 && !equalCombos(combo, a.lastCombo) {
-				a.lastCombo = append([]int(nil), combo...)
-				time.Sleep(40 * time.Millisecond)
-				currentCombo := a.HotkeyService.GetPressedKeys()
-				if len(currentCombo) > 0 {
-					application.Get().EmitEvent("captured_combo", currentCombo)
-				}
+			if len(combo.Keys) == 0 {
+				a.lastCombo = nil
+				return
+			}
+
+			if len(combo.Keys) < len(a.lastCombo) {
+				return
+			}
+
+			if len(combo.Keys) > len(a.lastCombo) || !equalCombos(combo.Keys, a.lastCombo) {
+				a.lastCombo = append([]int(nil), combo.Keys...)
+				application.Get().EmitEvent("captured_combo", combo.Keys)
 			}
 			return
 		}
@@ -44,7 +53,7 @@ func (a *App) SetupHotkeys() {
 				continue
 			}
 
-			if !equalCombos(combo, macro.ActivationKeys) {
+			if !equalCombos(combo.Keys, macro.ActivationKeys) {
 				continue
 			}
 
@@ -116,13 +125,14 @@ func (a *App) executeHoldMacro(macro types.Macro, stopCh chan bool) {
 				if action.Delay > 0 {
 					time.Sleep(time.Duration(action.Delay) * time.Millisecond)
 				}
-				if !hotkeys.IsComboPressed(macro.ActivationKeys) {
-					if ch, exists := a.activeMacros[macro.ID]; exists {
-						close(ch)
-						delete(a.activeMacros, macro.ID)
-					}
-					return
+			}
+
+			if !hotkeys.IsComboPressed(macro.ActivationKeys) {
+				if ch, exists := a.activeMacros[macro.ID]; exists {
+					close(ch)
+					delete(a.activeMacros, macro.ID)
 				}
+				return
 			}
 			time.Sleep(10 * time.Millisecond)
 		}
@@ -148,6 +158,7 @@ func (a *App) StartCapture() {
 func (a *App) StopCapture() {
 	a.captureMode = false
 	a.lastCombo = nil
+	a.lastComboTime = 0
 }
 
 func (a *App) ReadAppData() types.AppData {

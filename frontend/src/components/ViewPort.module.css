@@ -13,6 +13,7 @@
 .draggable {
   --wails-draggable: drag;
   height: 100%;
+  flex: 1 1 0;
 }
 
 .content {
