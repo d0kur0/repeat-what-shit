@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/d0kur0/repeat-what-shit/compare/v1.2.1...v1.2.2) (2025-01-10)
+
+
+### Bug Fixes
+
+* fuck off ([9452e78](https://github.com/d0kur0/repeat-what-shit/commit/9452e7888e02a60e2a2c7db95c5bfb95b9b12a39))
+
 ## [1.2.1](https://github.com/d0kur0/repeat-what-shit/compare/v1.2.0...v1.2.1) (2025-01-10)
 
 
