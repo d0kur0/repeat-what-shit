@@ -22,6 +22,6 @@
 
 ## Скриншоты
 
-![Главное окно](screenshots/1.png)
+![Главное окно](screenshots/list.png)
 
-![Редактирование макроса](screenshots/2.png)
+![Редактирование макроса](screenshots/create.png)
