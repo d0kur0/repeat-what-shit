@@ -4,3 +4,4 @@ frontend/dist
 frontend/node_modules
 wails.syso
 .task/checksum/*
+.DS_Store
