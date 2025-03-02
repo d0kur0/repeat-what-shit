@@ -1,3 +1,13 @@
+## [1.2.3](https://github.com/d0kur0/repeat-what-shit/compare/v1.2.2...v1.2.3) (2025-03-02)
+
+
+### Bug Fixes
+
+* fuck .DS_Store ([3f8a028](https://github.com/d0kur0/repeat-what-shit/commit/3f8a028eeef53d41a386a9d4ac609765996399e0))
+* prepareCmd suck after upd wails3 project struct ([91b8723](https://github.com/d0kur0/repeat-what-shit/commit/91b8723dccc85c5e49c112506f2f84e57133511c))
+* upd wails ([fd216da](https://github.com/d0kur0/repeat-what-shit/commit/fd216da57b2311531355067083b291b61a53dfde))
+* upd wails ([8b49c6c](https://github.com/d0kur0/repeat-what-shit/commit/8b49c6ceb81d014058e9778f9a21994f1ccdc069))
+
 ## [1.2.2](https://github.com/d0kur0/repeat-what-shit/compare/v1.2.1...v1.2.2) (2025-01-10)
 
 
