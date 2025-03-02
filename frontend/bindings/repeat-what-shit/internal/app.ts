@@ -8,16 +8,13 @@ import {Call as $Call} from "@wailsio/runtime";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as types$0 from "./types/models.js";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Unused imports
-import * as utils$0 from "./utils/models.js";
 
 export function GetVersion(): Promise<string> & { cancel(): void } {
     let $resultPromise = $Call.ByID(3718814993) as any;
     return $resultPromise;
 }
 
-export function GetWindowList(): Promise<utils$0.WindowInfo[] | null> & { cancel(): void } {
+export function GetWindowList(): Promise<any[] | null> & { cancel(): void } {
     let $resultPromise = $Call.ByID(2414998679) as any;
     return $resultPromise;
 }
