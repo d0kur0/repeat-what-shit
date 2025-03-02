@@ -24,17 +24,18 @@ var uiAssets embed.FS
 var appIcon []byte
 
 func main() {
-	appDir, err := utils.GetAppDirPath()
-	utils.Catch(err)
-
 	defer func() {
 		if r := recover(); r != nil {
+			appDir, _ := utils.GetAppDirPath()
 			crashLog := fmt.Sprintf("Panic: %v\n\nStack Trace:\n%s", r, debug.Stack())
 			s := storage.NewRawStorage(fmt.Sprintf("%s/crash_%s.log", appDir, time.Now().Format("2006-01-02_15-04-05")))
 			s.Write([]byte(crashLog))
 			log.Println(crashLog)
 		}
 	}()
+
+	appDir, err := utils.GetAppDirPath()
+	utils.Catch(err)
 
 	utils.Catch(utils.CreateAppDirIfNotExists())
 
@@ -79,7 +80,6 @@ func createMainWindow(app *application.App) {
 		Title:      consts.AppName,
 		StartState: mainWindowStartState,
 		Frameless:  true,
-		Centered:   true,
 	})
 
 	w.RegisterHook(events.Common.WindowClosing, func(event *application.WindowEvent) {
