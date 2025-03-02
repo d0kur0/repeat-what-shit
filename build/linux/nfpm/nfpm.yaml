@@ -3,31 +3,30 @@
 #
 # The lines below are called `modelines`. See `:help modeline`
 
-name: "myfirstapp"
+name: "repeat-what-shit"
 arch: ${GOARCH}
 platform: "linux"
 version: "0.1.0"
 section: "default"
 priority: "extra"
 maintainer: ${GIT_COMMITTER_NAME} <${GIT_COMMITTER_EMAIL}>
-description: "My Product Description"
-vendor: "My Company"
+description: "repeat-what-shit Description"
+vendor: "d0kur0"
 homepage: "https://wails.io"
 license: "MIT"
 release: "1"
 
 contents:
-  - src: "./bin/myfirstapp"
-    dst: "/usr/local/bin/myfirstapp"
+  - src: "./bin/repeat-what-shit"
+    dst: "/usr/local/bin/repeat-what-shit"
   - src: "./build/appicon.png"
-    dst: "/usr/share/icons/hicolor/128x128/apps/myfirstapp.png"
-  - src: "./build/linux/myfirstapp.desktop"
-    dst: "/usr/share/applications/myfirstapp.desktop"
+    dst: "/usr/share/icons/hicolor/128x128/apps/repeat-what-shit.png"
+  - src: "./build/linux/repeat-what-shit.desktop"
+    dst: "/usr/share/applications/repeat-what-shit.desktop"
 
 depends:
   - gtk3
   - libwebkit2gtk
-
 # replaces:
 #   - foobar
 # provides:
