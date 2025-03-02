@@ -22,7 +22,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "go install github.com/go-task/task/v3/cmd/task@latest && task build:windows:prod:amd64 VERSION=${nextRelease.version}"
+        "prepareCmd": "go install github.com/go-task/task/v3/cmd/task@latest && task windows:build PRODUCTION=true ARCH=amd64 VERSION=${nextRelease.version} && task windows:package PRODUCTION=true ARCH=amd64 VERSION=${nextRelease.version}"
       }
     ],
     [
