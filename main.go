@@ -17,6 +17,10 @@ import (
 	"github.com/wailsapp/wails/v3/pkg/events"
 )
 
+func init() {
+	application.RegisterEvent[[]int]("captured_combo")
+}
+
 //go:embed frontend/dist
 var uiAssets embed.FS
 
@@ -71,7 +75,7 @@ func createMainWindow(app *application.App) {
 		mainWindowStartState = application.WindowStateMinimised
 	}
 
-	w := app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
+	w := app.Window.NewWithOptions(application.WebviewWindowOptions{
 		URL:        "/",
 		Width:      consts.AppBaseWidth,
 		Height:     consts.AppBaseHeight,
@@ -86,12 +90,12 @@ func createMainWindow(app *application.App) {
 		app.Quit()
 	})
 
-	tray := app.NewSystemTray()
+	tray := app.SystemTray.New()
 	tray.SetLabel(consts.AppName)
 	tray.SetIcon(appIcon)
 	tray.SetDarkModeIcon(appIcon)
 
-	trayMenu := app.NewMenu()
+	trayMenu := app.Menu.New()
 
 	trayMenu.Add("Close").OnClick(func(_ *application.Context) {
 		app.Quit()

@@ -45,7 +45,7 @@ func (a *App) SetupHotkeys() {
 
 			if len(combo.Keys) > len(a.lastCombo) || !equalCombos(combo.Keys, a.lastCombo) {
 				a.lastCombo = append([]int(nil), combo.Keys...)
-				application.Get().EmitEvent("captured_combo", combo.Keys)
+				application.Get().Event.Emit("captured_combo", combo.Keys)
 			}
 			return
 		}

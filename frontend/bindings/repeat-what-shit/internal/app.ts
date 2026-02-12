@@ -3,43 +3,39 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {Call as $Call} from "@wailsio/runtime";
+import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as types$0 from "./types/models.js";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as utils$0 from "./utils/models.js";
 
-export function GetVersion(): Promise<string> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(3718814993) as any;
-    return $resultPromise;
+export function GetVersion(): $CancellablePromise<string> {
+    return $Call.ByID(3718814993);
 }
 
-export function GetWindowList(): Promise<any[] | null> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2414998679) as any;
-    return $resultPromise;
+export function GetWindowList(): $CancellablePromise<utils$0.WindowInfo[] | null> {
+    return $Call.ByID(2414998679);
 }
 
-export function ReadAppData(): Promise<types$0.AppData> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(3580827948) as any;
-    return $resultPromise;
+export function ReadAppData(): $CancellablePromise<types$0.AppData> {
+    return $Call.ByID(3580827948);
 }
 
-export function SetupHotkeys(): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1876575561) as any;
-    return $resultPromise;
+export function SetupHotkeys(): $CancellablePromise<void> {
+    return $Call.ByID(1876575561);
 }
 
-export function StartCapture(): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(3920081727) as any;
-    return $resultPromise;
+export function StartCapture(): $CancellablePromise<void> {
+    return $Call.ByID(3920081727);
 }
 
-export function StopCapture(): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(3208278569) as any;
-    return $resultPromise;
+export function StopCapture(): $CancellablePromise<void> {
+    return $Call.ByID(3208278569);
 }
 
-export function WriteAppData(data: types$0.AppData): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(3113756703, data) as any;
-    return $resultPromise;
+export function WriteAppData(data: types$0.AppData): $CancellablePromise<void> {
+    return $Call.ByID(3113756703, data);
 }

@@ -49,14 +49,12 @@ export function KeysPicker(props: KeysPickerProps) {
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("contextmenu", preventDefaultHandler);
 
-    unsubscribe = Events.On(
-      "captured_combo",
-      ({ data: [combo] }: { data: [number[]] }) => {
-        if (!focused()) return;
-        if (combo.length === 1 && combo[0] === KEYBOARD_KEYS.ЛКМ) return;
-        props.onChange(combo);
-      }
-    );
+    unsubscribe = Events.On("captured_combo", (ev) => {
+      const combo = ev.data as number[];
+      if (!focused()) return;
+      if (combo.length === 1 && combo[0] === KEYBOARD_KEYS.ЛКМ) return;
+      props.onChange(combo);
+    });
   };
 
   const handleBlur = () => {
