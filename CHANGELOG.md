@@ -1,3 +1,15 @@
+# [1.3.0](https://github.com/d0kur0/repeat-what-shit/compare/v1.2.4...v1.3.0) (2026-02-12)
+
+
+### Bug Fixes
+
+* bullshit bugs ([8c3b7b5](https://github.com/d0kur0/repeat-what-shit/commit/8c3b7b5ec4a2cf0063b9e9265518ce92c2aae0c4))
+
+
+### Features
+
+* wails3 again broke signatures and require update (need fix version of wails3) ([27159be](https://github.com/d0kur0/repeat-what-shit/commit/27159beee5a28fe813fe466442180eb23ce8291d))
+
 ## [1.2.4](https://github.com/d0kur0/repeat-what-shit/compare/v1.2.3...v1.2.4) (2025-03-02)
 
 
