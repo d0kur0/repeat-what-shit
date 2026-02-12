@@ -7,6 +7,7 @@ import (
 	"repeat-what-shit/internal/storage"
 	"repeat-what-shit/internal/types"
 	"repeat-what-shit/internal/utils"
+	"sync"
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
@@ -21,6 +22,7 @@ type App struct {
 	lastCombo     []int
 	lastComboTime uint32
 
+	macroMu      sync.Mutex
 	activeMacros map[string]chan bool
 }
 
@@ -66,20 +68,27 @@ func (a *App) SetupHotkeys() {
 				go a.executeMacro(macro)
 
 			case types.MacroTypeToggle:
+				a.macroMu.Lock()
 				if stopCh, exists := a.activeMacros[macro.ID]; exists {
 					close(stopCh)
 					delete(a.activeMacros, macro.ID)
+					a.macroMu.Unlock()
 				} else {
 					stopCh := make(chan bool)
 					a.activeMacros[macro.ID] = stopCh
+					a.macroMu.Unlock()
 					go a.executeToggleMacro(macro, stopCh)
 				}
 
 			case types.MacroTypeHold:
+				a.macroMu.Lock()
 				if _, exists := a.activeMacros[macro.ID]; !exists {
 					stopCh := make(chan bool)
 					a.activeMacros[macro.ID] = stopCh
+					a.macroMu.Unlock()
 					go a.executeHoldMacro(macro, stopCh)
+				} else {
+					a.macroMu.Unlock()
 				}
 			}
 		}
@@ -106,13 +115,20 @@ func (a *App) executeToggleMacro(macro types.Macro, stopCh chan bool) {
 	}
 }
 
+func (a *App) stopMacro(id string) {
+	a.macroMu.Lock()
+	defer a.macroMu.Unlock()
+	if ch, exists := a.activeMacros[id]; exists {
+		close(ch)
+		delete(a.activeMacros, id)
+	}
+}
+
 func (a *App) executeHoldMacro(macro types.Macro, stopCh chan bool) {
+	defer a.stopMacro(macro.ID)
+
 	for {
 		if !hotkeys.IsComboPressed(macro.ActivationKeys) {
-			if ch, exists := a.activeMacros[macro.ID]; exists {
-				close(ch)
-				delete(a.activeMacros, macro.ID)
-			}
 			return
 		}
 
@@ -126,14 +142,6 @@ func (a *App) executeHoldMacro(macro types.Macro, stopCh chan bool) {
 					time.Sleep(time.Duration(action.Delay) * time.Millisecond)
 				}
 			}
-
-			if !hotkeys.IsComboPressed(macro.ActivationKeys) {
-				if ch, exists := a.activeMacros[macro.ID]; exists {
-					close(ch)
-					delete(a.activeMacros, macro.ID)
-				}
-				return
-			}
 		}
 	}
 }
@@ -142,8 +150,15 @@ func equalCombos(a, b []int) bool {
 	if len(a) != len(b) {
 		return false
 	}
-	for i := range a {
-		if a[i] != b[i] {
+	for _, keyA := range a {
+		found := false
+		for _, keyB := range b {
+			if keyA == keyB {
+				found = true
+				break
+			}
+		}
+		if !found {
 			return false
 		}
 	}
