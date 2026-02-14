@@ -24,30 +24,31 @@ const safeUnsubscribe = (f: Function | undefined) => {
 export function KeysPicker(props: KeysPickerProps) {
   const [focused, setFocused] = createSignal(false);
   let unsubscribe: Function;
+  let rootRef!: HTMLButtonElement;
 
-  const preventDefaultHandler = (e: Event) => {
-    if (focused()) {
-      e.preventDefault();
-      return false;
+  const suppress = (e: Event) => {
+    if (!focused()) return;
+    if (e.type === "mousedown" && !rootRef.contains(e.target as Node)) {
+      rootRef.blur();
+      return;
     }
+    e.preventDefault();
+    e.stopPropagation();
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (focused() && e.key === "Tab") {
-      e.preventDefault();
-      return false;
-    }
-  };
+  const suppressedEvents = [
+    "keydown", "keyup", "keypress",
+    "mousedown", "mouseup", "auxclick",
+    "contextmenu", "dragstart",
+  ] as const;
 
   const handleFocus = () => {
     setFocused(true);
     StartCapture();
 
-    document.addEventListener("wheel", preventDefaultHandler, {
-      passive: false,
-    });
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("contextmenu", preventDefaultHandler);
+    for (const evt of suppressedEvents)
+      document.addEventListener(evt, suppress, true);
+    document.addEventListener("wheel", suppress, { passive: false, capture: true });
 
     unsubscribe = Events.On("captured_combo", (ev) => {
       const combo = ev.data as number[];
@@ -57,14 +58,17 @@ export function KeysPicker(props: KeysPickerProps) {
     });
   };
 
+  const cleanup = () => {
+    for (const evt of suppressedEvents)
+      document.removeEventListener(evt, suppress, true);
+    document.removeEventListener("wheel", suppress, true);
+  };
+
   const handleBlur = () => {
     setFocused(false);
     StopCapture();
     safeUnsubscribe(unsubscribe);
-
-    document.removeEventListener("wheel", preventDefaultHandler);
-    document.removeEventListener("keydown", handleKeyDown);
-    document.removeEventListener("contextmenu", preventDefaultHandler);
+    cleanup();
   };
 
   const handleClick = () => {
@@ -74,13 +78,12 @@ export function KeysPicker(props: KeysPickerProps) {
 
   onCleanup(() => {
     safeUnsubscribe(unsubscribe);
-    document.removeEventListener("wheel", preventDefaultHandler);
-    document.removeEventListener("keydown", handleKeyDown);
-    document.removeEventListener("contextmenu", preventDefaultHandler);
+    cleanup();
   });
 
   return (
     <button
+      ref={rootRef}
       class={styles.root}
       onBlur={handleBlur}
       onClick={handleClick}
