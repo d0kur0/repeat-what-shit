@@ -151,28 +151,19 @@ func (s *HotkeyService) handleEvents() {
 					} else {
 						wheelEvent |= 0x20000
 					}
-					combo := KeyCombo{
-						Keys: []int{wheelEvent},
-						Time: e.Time,
-					}
-					go s.handler(combo)
+					keys := append(s.GetPressedKeys(), wheelEvent)
+					go s.handler(KeyCombo{Keys: keys, Time: e.Time})
 				}
 			case WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN:
 				if s.handler != nil {
-					combo := KeyCombo{
-						Keys: []int{int(e.Message)},
-						Time: e.Time,
-					}
-					go s.handler(combo)
+					keys := append(s.GetPressedKeys(), int(e.Message))
+					go s.handler(KeyCombo{Keys: keys, Time: e.Time})
 				}
 			case WM_XBUTTONDOWN:
 				if s.handler != nil {
 					mouseEvent := int(e.Message) | int(e.MouseData>>16)<<16
-					combo := KeyCombo{
-						Keys: []int{mouseEvent},
-						Time: e.Time,
-					}
-					go s.handler(combo)
+					keys := append(s.GetPressedKeys(), mouseEvent)
+					go s.handler(KeyCombo{Keys: keys, Time: e.Time})
 				}
 			}
 		}
