@@ -1,3 +1,17 @@
+# [1.4.0](https://github.com/d0kur0/repeat-what-shit/compare/v1.3.0...v1.4.0) (2026-02-14)
+
+
+### Bug Fixes
+
+* block back/forward mouse events globally, allow mouse + keyboard pair ([f034010](https://github.com/d0kur0/repeat-what-shit/commit/f034010e4245676d3422af482e6a5dc26677754e))
+* correct handle user input for mkb pairs ([17b606f](https://github.com/d0kur0/repeat-what-shit/commit/17b606fb69760959d264b4e4874051fbd9fbd3c6))
+* mouse events on ui ([2904255](https://github.com/d0kur0/repeat-what-shit/commit/290425573a3f71eee35765b49addf1f491eb21a0))
+
+
+### Features
+
+* mouse x btns support ([d9a0fa8](https://github.com/d0kur0/repeat-what-shit/commit/d9a0fa8e2cc48a97bfd52d016d01e73d7cefdf90))
+
 # [1.3.0](https://github.com/d0kur0/repeat-what-shit/compare/v1.2.4...v1.3.0) (2026-02-12)
 
 
