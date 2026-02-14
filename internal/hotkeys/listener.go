@@ -138,6 +138,10 @@ func (s *HotkeyService) handleEvents() {
 			}
 
 		case e := <-s.mouseChannel:
+			if uint32(e.DWExtraInfo) == input.EMULATED_FLAG {
+				continue
+			}
+
 			switch e.Message {
 			case WM_MOUSEWHEEL:
 				if s.handler != nil {

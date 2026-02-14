@@ -123,10 +123,7 @@ export const KEYBOARD_KEYS = {
 
   ЛКМ: 0x0201,
   ПКМ: 0x0204,
-  "Колесо мыши": 0x0207,
-
-  XBUTTON1: 0x020b | (0x0001 << 16),
-  XBUTTON2: 0x020b | (0x0002 << 16),
+  СКМ: 0x0207,
 
   "Колесо вверх": 0x020a | 0x10000,
   "Колесо вниз": 0x020a | 0x20000,
@@ -144,12 +141,19 @@ export const MODIFIERS = [
   KEYBOARD_KEYS["RIGHT ALT"],
 ];
 
+const WM_XBUTTONDOWN = 0x020b;
+
 export function getKeyName(code: number): string {
   const key = Object.keys(KEYBOARD_KEYS).find(
     (key) => KEYBOARD_KEYS[key as keyof typeof KEYBOARD_KEYS] === code
   );
+  if (key) return key;
 
-  return key || `Клавиша (${code})`;
+  if ((code & 0xffff) === WM_XBUTTONDOWN) {
+    return `Мышь ${(code >> 16) + 2}`;
+  }
+
+  return `Клавиша (${code})`;
 }
 
 export function sortKeyCombo(combo: number[]): number[] {
