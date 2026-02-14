@@ -37,9 +37,14 @@ export function KeysPicker(props: KeysPickerProps) {
   };
 
   const suppressedEvents = [
-    "keydown", "keyup", "keypress",
-    "mousedown", "mouseup", "auxclick",
-    "contextmenu", "dragstart",
+    "keydown",
+    "keyup",
+    "keypress",
+    "mousedown",
+    "mouseup",
+    "auxclick",
+    "contextmenu",
+    "dragstart",
   ] as const;
 
   const handleFocus = () => {
@@ -48,7 +53,10 @@ export function KeysPicker(props: KeysPickerProps) {
 
     for (const evt of suppressedEvents)
       document.addEventListener(evt, suppress, true);
-    document.addEventListener("wheel", suppress, { passive: false, capture: true });
+    document.addEventListener("wheel", suppress, {
+      passive: false,
+      capture: true,
+    });
 
     unsubscribe = Events.On("captured_combo", (ev) => {
       const combo = ev.data as number[];

@@ -12,10 +12,14 @@ import (
 
 const (
 	WM_LBUTTONDOWN = 0x0201
+	WM_LBUTTONUP   = 0x0202
 	WM_RBUTTONDOWN = 0x0204
+	WM_RBUTTONUP   = 0x0205
 	WM_MBUTTONDOWN = 0x0207
+	WM_MBUTTONUP   = 0x0208
 	WM_MOUSEWHEEL  = 0x020A
 	WM_XBUTTONDOWN = 0x020B
+	WM_XBUTTONUP   = 0x020C
 )
 
 type KeyCombo struct {
@@ -154,16 +158,41 @@ func (s *HotkeyService) handleEvents() {
 					keys := append(s.GetPressedKeys(), wheelEvent)
 					go s.handler(KeyCombo{Keys: keys, Time: e.Time})
 				}
+
 			case WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN:
+				mouseKey := int(e.Message)
+				s.cancelMu.Lock()
+				s.pressedKeys[mouseKey] = struct{}{}
+				s.cancelMu.Unlock()
 				if s.handler != nil {
-					keys := append(s.GetPressedKeys(), int(e.Message))
-					go s.handler(KeyCombo{Keys: keys, Time: e.Time})
+					go s.handler(KeyCombo{Keys: s.GetPressedKeys(), Time: e.Time})
 				}
-			case WM_XBUTTONDOWN:
+
+			case WM_LBUTTONUP, WM_RBUTTONUP, WM_MBUTTONUP:
+				mouseKey := int(e.Message) - 1 // UP = DOWN + 1
+				s.cancelMu.Lock()
+				delete(s.pressedKeys, mouseKey)
+				s.cancelMu.Unlock()
 				if s.handler != nil {
-					mouseEvent := int(e.Message) | int(e.MouseData>>16)<<16
-					keys := append(s.GetPressedKeys(), mouseEvent)
-					go s.handler(KeyCombo{Keys: keys, Time: e.Time})
+					go s.handler(KeyCombo{Keys: s.GetPressedKeys(), Time: e.Time})
+				}
+
+			case WM_XBUTTONDOWN:
+				mouseKey := int(e.Message) | int(e.MouseData>>16)<<16
+				s.cancelMu.Lock()
+				s.pressedKeys[mouseKey] = struct{}{}
+				s.cancelMu.Unlock()
+				if s.handler != nil {
+					go s.handler(KeyCombo{Keys: s.GetPressedKeys(), Time: e.Time})
+				}
+
+			case WM_XBUTTONUP:
+				mouseKey := WM_XBUTTONDOWN | int(e.MouseData>>16)<<16
+				s.cancelMu.Lock()
+				delete(s.pressedKeys, mouseKey)
+				s.cancelMu.Unlock()
+				if s.handler != nil {
+					go s.handler(KeyCombo{Keys: s.GetPressedKeys(), Time: e.Time})
 				}
 			}
 		}
